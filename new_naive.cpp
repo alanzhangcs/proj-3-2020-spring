@@ -66,6 +66,10 @@ Matrix load_data(const char* filename){
                 ch = buf[char_cursor++];
             }
             while(ch != ' ' && ch != '\n'){
+                if(ch == '\r'){
+                    char_cursor++;
+                    break;
+                }
                 temp_num += (ch - 48) / float_count;
                 float_count *= 10;
                 ch = buf[char_cursor++];

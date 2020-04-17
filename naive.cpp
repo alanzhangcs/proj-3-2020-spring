@@ -17,6 +17,7 @@ Matrix load_data(const char* filename){
     char* buf = (char*)malloc(100);
     fgets(buf, 100, f);
     sscanf(buf, "%d %d", &(m.row), &(m.col));
+    // printf("%s: %d %d\n",buf,  m.row, m.col);
     free(buf);
 
     int max_len = m.row * m.col * 7;
@@ -56,6 +57,10 @@ Matrix load_data(const char* filename){
                 ch = buf[char_cursor++];
             }
             while(ch != ' ' && ch != '\n'){
+                if(ch == '\r'){
+                    char_cursor++;
+                    break;
+                }
                 temp_num += (ch - 48) / float_count;
                 float_count *= 10;
                 ch = buf[char_cursor++];
@@ -231,13 +236,13 @@ int main() {
     t = clock();
     Matrix output = mat_mul(features, w);
     softmax(output);
-    // write_data("test2.txt", output);
+    write_data("test1.txt", labels);
     double loss = cross_entropy_loss(output, labels);
     Matrix prediction = logits2prediction(output);
     double acc = accuracy(prediction, labels);
     printf("Calculate time: %fs\n", (double)(clock() - t) / CLOCKS_PER_SEC);
     
-    printf("Result: loss = %f, acc = %f", loss, acc);
+    printf("Result: loss = %f, acc = %f\n", loss, acc);
     write_data("prediction.txt", prediction);
     // Matrix features = load_data("data/features.txt");
     return 0;
