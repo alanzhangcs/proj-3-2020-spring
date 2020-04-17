@@ -7,7 +7,9 @@
 #endif
 
 #include <iostream>
-#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <time.h>
+#include <cmath>
 #include <time.h>
 
 using namespace std;
@@ -123,7 +125,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[m * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -149,7 +151,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[(m+1) * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -175,7 +177,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[(m+2) * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -201,7 +203,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[(m+3) * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -229,7 +231,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[m * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -247,12 +249,13 @@ Matrix mat_mul(Matrix a, Matrix b) {
 
 void normalize(Matrix res) {
     float sum;
+    __m128 new_c;
     for (int m=0; m < res.row - 4; m += 4) {
         //第一个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -270,9 +273,9 @@ void normalize(Matrix res) {
 
         //第二个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[(m+1) * res.col + s],res.data[(m+1) * res.col + s + 1],res.data[(m+1) * res.col + s + 2],res.data[(m+1) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+1) * res.col + s],res.data[(m+1) * res.col + s + 1],res.data[(m+1) * res.col + s + 2],res.data[(m+1) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -290,9 +293,9 @@ void normalize(Matrix res) {
         
         //第三个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[(m+2) * res.col + s],res.data[(m+2) * res.col + s + 1],res.data[(m+2) * res.col + s + 2],res.data[(m+2) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+2) * res.col + s],res.data[(m+2) * res.col + s + 1],res.data[(m+2) * res.col + s + 2],res.data[(m+2) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -310,9 +313,9 @@ void normalize(Matrix res) {
         
         //第四个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[(m+3) * res.col + s],res.data[(m+3) * res.col + s + 1],res.data[(m+3) * res.col + s + 2],res.data[(m+3) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+3) * res.col + s],res.data[(m+3) * res.col + s + 1],res.data[(m+3) * res.col + s + 2],res.data[(m+3) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -336,7 +339,7 @@ void normalize(Matrix res) {
 
         __m128 new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -359,17 +362,18 @@ void normalize(Matrix res) {
 
 void softmax(Matrix res) {
     float sum;
+    __m128 new_c;
     for (int m=0; m < res.row - 4; m += 4) {
         //第一个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s += 4){
 
             res.data[m * res.col + s] = exp(res.data[m * res.col + s]);
             res.data[m * res.col + s + 1] = exp(res.data[m * res.col + s + 1]);
             res.data[m * res.col + s + 2] = exp(res.data[m * res.col + s + 2]);
             res.data[m * res.col + s + 3] = exp(res.data[m * res.col + s + 3]);
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 
@@ -390,14 +394,14 @@ void softmax(Matrix res) {
         
         //第二个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s += 4){
 
             res.data[(m + 1) * res.col + s] = exp(res.data[(m+1) * res.col + s]);
             res.data[(m+1) * res.col + s + 1] = exp(res.data[(m+1) * res.col + s + 1]);
             res.data[(m+1) * res.col + s + 2] = exp(res.data[(m+1) * res.col + s + 2]);
             res.data[(m+1) * res.col + s + 3] = exp(res.data[(m+1) * res.col + s + 3]);
-            float new_a[4] = {res.data[(m+1) * res.col + s],res.data[(m+1) * res.col + s + 1],res.data[(m+1) * res.col + s + 2],res.data[(m+1) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+1) * res.col + s],res.data[(m+1) * res.col + s + 1],res.data[(m+1) * res.col + s + 2],res.data[(m+1) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 
@@ -428,14 +432,14 @@ void softmax(Matrix res) {
         //第三个for
 
                sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s += 4){
 
             res.data[(m + 2) * res.col + s] = exp(res.data[(m+2) * res.col + s]);
             res.data[(m+2) * res.col + s + 1] = exp(res.data[(m+2) * res.col + s + 1]);
             res.data[(m+2) * res.col + s + 2] = exp(res.data[(m+2) * res.col + s + 2]);
             res.data[(m+2) * res.col + s + 3] = exp(res.data[(m+2) * res.col + s + 3]);
-            float new_a[4] = {res.data[(m+2) * res.col + s],res.data[(m+2） * res.col + s + 1],res.data[(m+2) * res.col + s + 2],res.data[(m+2) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+2) * res.col + s],res.data[(m+2) * res.col + s + 1],res.data[(m+2) * res.col + s + 2],res.data[(m+2) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 
@@ -457,14 +461,14 @@ void softmax(Matrix res) {
 
         //第四个for
         sum = 0;
-        __m128 new_c = _mm_load_ps(C);
+        new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s += 4){
 
             res.data[(m + 3) * res.col + s] = exp(res.data[(m+3) * res.col + s]);
             res.data[(m+3) * res.col + s + 1] = exp(res.data[(m+3) * res.col + s + 1]);
             res.data[(m+3) * res.col + s + 2] = exp(res.data[(m+3) * res.col + s + 2]);
             res.data[(m+3) * res.col + s + 3] = exp(res.data[(m+3) * res.col + s + 3]);
-            float new_a[4] = {res.data[(m+3) * res.col + s],res.data[(m+3) * res.col + s + 1],res.data[(m+3) * res.col + s + 2],res.data[(m+3) * res.col + s + 3]}
+            float new_a[4] = {res.data[(m+3) * res.col + s],res.data[(m+3) * res.col + s + 1],res.data[(m+3) * res.col + s + 2],res.data[(m+3) * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 
@@ -493,7 +497,7 @@ void softmax(Matrix res) {
             res.data[m * res.col + s + 1] = exp(res.data[m * res.col + s + 1]);
             res.data[m * res.col + s + 2] = exp(res.data[m * res.col + s + 2]);
             res.data[m * res.col + s + 3] = exp(res.data[m * res.col + s + 3]);
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 

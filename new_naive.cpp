@@ -7,7 +7,9 @@
 #endif
 
 #include <iostream>
-#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <time.h>
+#include <cmath>
 #include <time.h>
 
 using namespace std;
@@ -123,7 +125,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
                 new_c = _mm_add_ps(temp, new_c);
                 
             }
-            _mm_store_ps(&C[0], c);
+            _mm_store_ps(&C[0], new_c);
             for(int i = 0; i < 4; i++) {
                 res.data[m * res.col + s] += C[i];
                 C[i] = 0.0;
@@ -146,7 +148,7 @@ void normalize(Matrix res) {
 
         __m128 new_c = _mm_load_ps(C);
         for (int s = 0; s < res.col - 4; s = s + 4){
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);            
         }
@@ -178,7 +180,7 @@ void softmax(Matrix res) {
             res.data[m * res.col + s + 1] = exp(res.data[m * res.col + s + 1]);
             res.data[m * res.col + s + 2] = exp(res.data[m * res.col + s + 2]);
             res.data[m * res.col + s + 3] = exp(res.data[m * res.col + s + 3]);
-            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]}
+            float new_a[4] = {res.data[m * res.col + s],res.data[m * res.col + s + 1],res.data[m * res.col + s + 2],res.data[m * res.col + s + 3]};
             __m128 temp = _mm_load_ps(new_a);
             new_c = _mm_add_ps(temp, new_c);  
 
