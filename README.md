@@ -2,6 +2,7 @@
 para_dot_noalgo为未改算法版本。
 para_dot修改了算法（计算顺序），但不得不提前赋值。希望能继续改进。
 
+naive_para.cpp:一个单纯并行化的版本。
 naive.cpp:一个未优化的串行实现版本。
 ## naive.cpp 函数说明
 Matrix load_data(const char* filename): 从文件中读取矩阵（快速版）
