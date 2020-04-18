@@ -1,4 +1,3 @@
-
 #if defined(_MSC_VER)
 #include <intrin.h>
 #elif defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__))
@@ -13,13 +12,13 @@
 #include <time.h>
 
 using namespace std;
-
+float C[] = {0.0f, 0.0f, 0.0f, 0.0f};
 struct Matrix{
     float * data;
     int col;
     int row;
 };
-float C[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
 Matrix load_data(const char* filename){
     Matrix m;
 
@@ -66,6 +65,10 @@ Matrix load_data(const char* filename){
                 ch = buf[char_cursor++];
             }
             while(ch != ' ' && ch != '\n'){
+                if(ch == '\r'){
+                    char_cursor++;
+                    break;
+                }
                 temp_num += (ch - 48) / float_count;
                 float_count *= 10;
                 ch = buf[char_cursor++];
@@ -114,7 +117,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             res.data[m * res.col + s] = 0;
             __m128 new_c = _mm_load_ps(C);
             for (int n = 0; n < a.col - 4 ; n = n + 4) {
-                float A[4] = {a.data[m * a.col + n], a.data[m * a.col + n], a.data[m * a.col + n], a.data[m * a.col + n]};
+                float A[4] = {a.data[m * a.col + n], a.data[m * a.col + n + 1], a.data[m * a.col + n + 2], a.data[m * a.col + n + 3]};
                 float B[4] = {b.data[n * b.col + s],b.data[(n+1)* b.col + s],b.data[(n+2) * b.col + s],b.data[(n+3) * b.col + s]};
 
 
@@ -140,7 +143,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             res.data[(m+1) * res.col + s] = 0;
             __m128 new_c = _mm_load_ps(C);
             for (int n = 0; n < a.col - 4 ; n = n + 4) {
-                float A[4] = {a.data[(m+1) * a.col + n], a.data[(m+1) * a.col + n], a.data[(m+1) * a.col + n], a.data[(m+1) * a.col + n]};
+                float A[4] = {a.data[(m+1) * a.col + n], a.data[(m+1) * a.col + n + 1], a.data[(m+1) * a.col + n + 2], a.data[(m+1) * a.col + n + 3]};
                 float B[4] = {b.data[n * b.col + s],b.data[(n+1)* b.col + s],b.data[(n+2) * b.col + s],b.data[(n+3) * b.col + s]};
 
 
@@ -166,7 +169,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             res.data[(m+2) * res.col + s] = 0;
             __m128 new_c = _mm_load_ps(C);
             for (int n = 0; n < a.col - 4 ; n = n + 4) {
-                float A[4] = {a.data[(m+2) * a.col + n], a.data[(m+2) * a.col + n], a.data[(m+2) * a.col + n], a.data[(m+3) * a.col + n]};
+                float A[4] = {a.data[(m+2) * a.col + n], a.data[(m+2) * a.col + n + 1], a.data[(m+2) * a.col + n + 2], a.data[(m+2) * a.col + n + 3]};
                 float B[4] = {b.data[n * b.col + s],b.data[(n+1)* b.col + s],b.data[(n+2) * b.col + s],b.data[(n+3) * b.col + s]};
 
 
@@ -192,7 +195,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             res.data[(m+3) * res.col + s] = 0;
             __m128 new_c = _mm_load_ps(C);
             for (int n = 0; n < a.col - 4 ; n = n + 4) {
-                float A[4] = {a.data[(m+3) * a.col + n], a.data[(m+3) * a.col + n], a.data[(m+3) * a.col + n], a.data[(m+3) * a.col + n]};
+                float A[4] = {a.data[(m+3) * a.col + n], a.data[(m+3) * a.col + n + 1], a.data[(m+3) * a.col + n + 2], a.data[(m+3) * a.col + n + 3]};
                 float B[4] = {b.data[n * b.col + s],b.data[(n+1)* b.col + s],b.data[(n+2) * b.col + s],b.data[(n+3) * b.col + s]};
 
 
@@ -220,7 +223,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             res.data[m * res.col + s] = 0;
             __m128 new_c = _mm_load_ps(C);
             for (int n = 0; n < a.col - 4 ; n = n + 4) {
-                float A[4] = {a.data[m * a.col + n], a.data[m * a.col + n], a.data[m * a.col + n], a.data[m * a.col + n]};
+                float A[4] = {a.data[m * a.col + n], a.data[m * a.col + n +1], a.data[m * a.col + n +2], a.data[m * a.col + n + 3]};
                 float B[4] = {b.data[n * b.col + s],b.data[(n+1)* b.col + s],b.data[(n+2) * b.col + s],b.data[(n+3) * b.col + s]};
 
 
@@ -243,6 +246,7 @@ Matrix mat_mul(Matrix a, Matrix b) {
             //     printf("%d %d %d\n",m ,s);
         }
     }
+    
     return res;
 }
 
@@ -520,6 +524,7 @@ void softmax(Matrix res) {
 }
 
 
+
 float cross_entropy_loss(Matrix logits, Matrix ground_truth) {
     // Suppose the logits have already softmaxed
     if (logits.row != ground_truth.row || logits.col != ground_truth.col) {
@@ -617,7 +622,7 @@ int main() {
     float acc = accuracy(prediction, labels);
     printf("Calculate time: %fs\n", (float)(clock() - t) / CLOCKS_PER_SEC);
     
-    printf("Result: loss = %f, acc = %f", loss, acc);
+    printf("Result: loss = %f, acc = %f\n", loss, acc);
     write_data("prediction.txt", prediction);
     // Matrix features = load_data("data/features.txt");
     return 0;
